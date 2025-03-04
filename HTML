@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Tracker</title>
+  <style>
+    /* CSS Styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .habit {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .habit:last-child {
+      border-bottom: none;
+    }
+
+    .habit input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .habit.completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    #addHabit {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    #newHabit {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    #addBtn {
+      padding: 10px 20px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #addBtn:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Habit Tracker</h1>
+    <div id="habits">
+      <!-- Habits will be added here -->
+    </div>
+    <div id="addHabit">
+      <input type="text" id="newHabit" placeholder="Add a new habit">
+      <button id="addBtn">Add</button>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript Functionality
+    const habitsContainer = document.getElementById('habits');
+    const newHabitInput = document.getElementById('newHabit');
+    const addBtn = document.getElementById('addBtn');
+
+    // Load habits from localStorage
+    let habits = JSON.parse(localStorage.getItem('habits')) || [];
+
+    function renderHabits() {
+      habitsContainer.innerHTML = '';
+      habits.forEach((habit, index) => {
+        const habitDiv = document.createElement('div');
+        habitDiv.className = `habit ${habit.completed ? 'completed' : ''}`;
+        habitDiv.innerHTML = `
+          <span>${habit.name}</span>
+          <input type="checkbox" ${habit.completed ? 'checked' : ''}>
+        `;
+        habitsContainer.appendChild(habitDiv);
+
+        // Add event listener to checkbox
+        const checkbox = habitDiv.querySelector('input');
+        checkbox.addEventListener('change', () => {
+          habits[index].completed = checkbox.checked;
+          localStorage.setItem('habits', JSON.stringify(habits));
+          renderHabits();
+        });
+      });
+    }
+
+    function addHabit() {
+      const habitName = newHabitInput.value.trim();
+      if (!habitName) {
+        alert('Please enter a habit name!');
+        return;
+      }
+
+      habits.push({ name: habitName, completed: false });
+      localStorage.setItem('habits', JSON.stringify(habits));
+      newHabitInput.value = '';
+      renderHabits();
+    }
+
+    addBtn.addEventListener('click', addHabit);
+
+    // Render habits when the page loads
+    renderHabits();
+  </script>
+</body>
+</html>
